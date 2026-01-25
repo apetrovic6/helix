@@ -1,0 +1,25 @@
+when:
+  event: cron
+  cron: update
+
+steps:
+  update:
+    image: nixos/nix:2.33.1
+    environment:
+      NIX_CONFIG: "experimental-features = nix-command flakes"
+    commands:
+      - nix fmt
+      - nix flake update
+
+  commit:
+    image: alpine/git
+    environment:
+      FORGEJO_TOKEN:
+        from_secret: forgejo_token
+    commands:
+      - git config user.name "Woodpecker CI"
+      - git config user.email "ci@noosphere.uk"
+      - git remote set-url origin https://$FORGEJO_TOKEN@forge.noosphere.uk/manjo/helix.git
+      - git add .
+      - git diff --staged --quiet || git commit -m "Woodpecker CI - flake update"
+      - git push --set-upstream origin master
