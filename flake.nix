@@ -29,7 +29,7 @@
       system: let
         pkgs = import nixpkgs {inherit system;};
         langs = import ./languages.nix {inherit pkgs;};
-        editor = import ./editor.nix;
+        editor = import ./editor.nix {lib = pkgs.lib;};
         keybinds = import ./keybinds.nix {inherit pkgs;};
       in {
         default = helix.wrap {
