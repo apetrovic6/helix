@@ -1,14 +1,28 @@
 {
   description = "Wrapped helix editor with custom configuration";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  inputs.wrappers.url = "github:BirdeeHub/nix-wrapper-modules";
-  inputs.wrappers.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.treefmt-nix.url = "github:numtide/treefmt-nix";
-  inputs.treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    helix = {
+      url = "github:helix-editor/helix/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    wrappers = {
+      url = "github:BirdeeHub/nix-wrapper-modules";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
 
   outputs = {
     self,
     nixpkgs,
+    helix,
     wrappers,
     treefmt-nix,
     ...
@@ -27,7 +41,10 @@
     wrappers.default = helix;
     packages = forAllSystems (
       system: let
-        pkgs = import nixpkgs {inherit system;};
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [(_: prev: {helix = inputs.helix.packages.${system}.default;})];
+        };
         langs = import ./languages.nix {inherit pkgs;};
         editor = import ./editor.nix {lib = pkgs.lib;};
         keybinds = import ./keybinds.nix {inherit pkgs;};
