@@ -15,6 +15,11 @@
       file-types = ["yaml" "yml"];
       language-servers = ["yaml-language-server"];
     }
+    {
+      name = "rust";
+      file-types = ["rs"];
+      language-servers = ["rust-analyzer"];
+    }
   ];
 
   # Language server configurations
@@ -47,5 +52,9 @@
         ];
       };
     };
+  };
+
+  language-server.rust-analyzer = {
+    config = { check.command = "clippy"; };
   };
 }
