@@ -55,6 +55,6 @@
   };
 
   language-server.rust-analyzer = {
-    config = { check.command = "clippy"; };
+    config = {check.command = "clippy";};
   };
 }
