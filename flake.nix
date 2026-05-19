@@ -43,6 +43,7 @@
       system: let
         pkgs = import nixpkgs {
           inherit system;
+          nixpkgs.config.allowUnfree = true;
           overlays = [(_: prev: {helix = inputs.helix.packages.${system}.default;})];
         };
         langs = import ./languages.nix {inherit pkgs;};
